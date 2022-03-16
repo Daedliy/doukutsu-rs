@@ -289,9 +289,11 @@ impl Clone for TitleConsts {
 #[derive(Debug)]
 pub struct EngineConstants {
     pub base_paths: Vec<String>,
+    pub is_dsi: bool,
     pub is_cs_plus: bool,
     pub is_switch: bool,
     pub supports_og_textures: bool,
+    pub supports_jukebox: bool,
     pub game: GameConsts,
     pub player: PlayerConsts,
     pub booster: BoosterConsts,
@@ -320,9 +322,11 @@ impl Clone for EngineConstants {
     fn clone(&self) -> EngineConstants {
         EngineConstants {
             base_paths: self.base_paths.clone(),
+            is_dsi: self.is_dsi,
             is_cs_plus: self.is_cs_plus,
             is_switch: self.is_switch,
             supports_og_textures: self.supports_og_textures,
+            supports_jukebox: self.supports_jukebox,
             game: self.game,
             player: self.player,
             booster: self.booster,
@@ -353,9 +357,11 @@ impl EngineConstants {
     pub fn defaults() -> Self {
         EngineConstants {
             base_paths: Vec::new(),
+            is_dsi: false,
             is_cs_plus: false,
             is_switch: false,
             supports_og_textures: false,
+            supports_jukebox: false,
             game: GameConsts {
                 intro_stage: 72,
                 intro_event: 100,
@@ -1616,11 +1622,13 @@ impl EngineConstants {
             ],
             organya_paths: vec![
                 "/org/".to_owned(),          // NXEngine
-                "/base/Org/".to_owned(),     // CS+
+                "/base/Org/".to_owned(),     // CS+ / WiiWare
+                "/root/Org/".to_owned(),     // DSiWare / EShop
                 "/Resource/ORG/".to_owned(), // CSE2E
             ],
             credit_illustration_paths: vec![
                 "".to_owned(),
+                "root/bmp/".to_owned(), // DSiWare / Eshop
                 "Resource/BITMAP/".to_owned(), // CSE2E
                 "endpic/".to_owned(),          // NXEngine
             ],
@@ -1682,11 +1690,20 @@ impl EngineConstants {
         let _ = sound_manager.set_sample_params(2, typewriter_sample);
     }
 
+    pub fn apply_cs_twl_patches(&mut self, sound_manager: &SoundManager) {
+        log::info!("Applying DSi-specific Cave Story constants patches...");
+        self.is_dsi = true;
+        self.textscript.encrypted = false;
+        self.supports_jukebox = true;
+    }
+
+
     pub fn apply_csplus_nx_patches(&mut self) {
         log::info!("Applying Switch-specific Cave Story+ constants patches...");
 
         self.is_switch = true;
         self.supports_og_textures = true;
+        self.supports_jukebox = true;
         self.tex_sizes.insert("bkMoon".to_owned(), (427, 240));
         self.tex_sizes.insert("bkFog".to_owned(), (427, 240));
         self.tex_sizes.insert("ui".to_owned(), (128, 32));
@@ -1728,6 +1745,11 @@ impl EngineConstants {
             if settings.locale != Language::English {
                 self.base_paths.insert(0, format!("/{}/", settings.locale.to_language_code()));
             }
+        }
+        //Early DSi Support
+        if self.is_dsi {
+            self.base_paths.insert(0, "/root/".to_owned());
+
         }
 
         if let Some(mut mod_path) = mod_path {

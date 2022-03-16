@@ -292,6 +292,7 @@ impl SharedGameState {
             constants.apply_csplus_patches(&sound_manager);
         } else if filesystem::exists(ctx, "/root/buid_time.txt") {
             error!("DSiWare data files detected. !UNSUPPORTED!"); //Freeware 2.0, sprites are arranged VERY differently + separate drowned carets
+            constants.apply_cs_twl_patches(&sound_manager);
         } else if filesystem::exists(ctx, "/darken.tex") || filesystem::exists(ctx, "/darken.png") {
             error!("EShop data files detected. !UNSUPPORTED!"); //Ditto, drowned carets finally part of mychar, the turning point towards CS+
         } else if filesystem::exists(ctx, "/data/stage3d/") {

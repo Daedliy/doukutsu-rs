@@ -160,7 +160,7 @@ impl Scene for TitleScene {
         } else {
             self.main_menu.push_entry(MenuEntry::Hidden);
         }
-        if state.constants.is_switch {
+        if state.constants.supports_jukebox {
             self.main_menu.push_entry(MenuEntry::Active(state.t("menus.main_menu.jukebox")));
         } else {
             self.main_menu.push_entry(MenuEntry::Hidden);
