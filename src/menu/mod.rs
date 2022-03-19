@@ -503,16 +503,28 @@ impl Menu {
                     )?;
 
                     // Difficulty
-                    if state.constants.is_cs_plus {
-                        let difficulty = GameDifficulty::from_primitive(save.difficulty);
+                    if state.constants.supports_difficulty_costumes {
+                        if state.constants.is_cs_plus {
+                            let difficulty = GameDifficulty::from_primitive(save.difficulty);
 
-                        let batch = state.texture_set.get_or_load_batch(ctx, &state.constants, "MyChar")?;
-                        batch.add_rect(
-                            self.x as f32 + 20.0,
-                            y + 10.0,
-                            &Rect::new_size(0, (difficulty as u16).saturating_mul(2 * 16), 16, 16),
-                        );
-                        batch.draw(ctx)?;
+                            let batch = state.texture_set.get_or_load_batch(ctx, &state.constants, "MyChar")?;
+                            batch.add_rect(
+                                self.x as f32 + 20.0,
+                                y + 10.0,
+                                &Rect::new_size(0, (difficulty as u16).saturating_mul(2 * 16), 16, 16),
+                            );
+                            batch.draw(ctx)?;
+                        } else { //Handheld Difficulty 
+                            let difficulty = GameDifficulty::from_primitive(save.difficulty);
+
+                            let batch = state.texture_set.get_or_load_batch(ctx, &state.constants, "uichar")?;
+                            batch.add_rect(
+                                self.x as f32 + 20.0,
+                                y + 10.0,
+                                &Rect::new_size(0, (difficulty as u16).saturating_mul(8), 16, 16),
+                            );
+                            batch.draw(ctx)?;
+                            }
                     } else {
                         let mut difficulty_name: String = "Difficulty: ".to_owned();
 

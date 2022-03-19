@@ -292,6 +292,7 @@ pub struct EngineConstants {
     pub is_dsi: bool,
     pub is_cs_plus: bool,
     pub is_switch: bool,
+    pub supports_difficulty_costumes: bool,
     pub supports_og_textures: bool,
     pub supports_jukebox: bool,
     pub game: GameConsts,
@@ -325,6 +326,7 @@ impl Clone for EngineConstants {
             is_dsi: self.is_dsi,
             is_cs_plus: self.is_cs_plus,
             is_switch: self.is_switch,
+            supports_difficulty_costumes: self.supports_difficulty_costumes,
             supports_og_textures: self.supports_og_textures,
             supports_jukebox: self.supports_jukebox,
             game: self.game,
@@ -360,6 +362,7 @@ impl EngineConstants {
             is_dsi: false,
             is_cs_plus: false,
             is_switch: false,
+            supports_difficulty_costumes: false,
             supports_og_textures: false,
             supports_jukebox: false,
             game: GameConsts {
@@ -1644,6 +1647,7 @@ impl EngineConstants {
 
         self.is_cs_plus = true;
         self.supports_og_textures = true;
+        self.supports_difficulty_costumes = true;
         self.tex_sizes.insert("Caret".to_owned(), (320, 320));
         self.tex_sizes.insert("MyChar".to_owned(), (200, 384));
         self.tex_sizes.insert("Npc/NpcRegu".to_owned(), (320, 410));
@@ -1693,6 +1697,7 @@ impl EngineConstants {
     pub fn apply_cs_twl_patches(&mut self, sound_manager: &SoundManager) {
         log::info!("Applying DSi-specific Cave Story constants patches...");
         self.is_dsi = true;
+        self.supports_difficulty_costumes = true;
         self.textscript.encrypted = false;
         self.supports_jukebox = true;
     }
@@ -1702,6 +1707,7 @@ impl EngineConstants {
         log::info!("Applying Switch-specific Cave Story+ constants patches...");
 
         self.is_switch = true;
+        self.supports_difficulty_costumes = true;
         self.supports_og_textures = true;
         self.supports_jukebox = true;
         self.tex_sizes.insert("bkMoon".to_owned(), (427, 240));
