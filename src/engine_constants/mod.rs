@@ -261,6 +261,11 @@ pub struct TitleConsts {
     pub cursor_toroko: [Rect<u16>; 4],
     pub cursor_king: [Rect<u16>; 4],
     pub cursor_sue: [Rect<u16>; 4],
+    pub handheld_cursor_quote: [Rect<u16>; 4],
+    pub handheld_cursor_curly: [Rect<u16>; 4],
+    pub handheld_cursor_toroko: [Rect<u16>; 4],
+    pub handheld_cursor_king: [Rect<u16>; 4],
+    pub handheld_cursor_sue: [Rect<u16>; 4],
 }
 
 impl Clone for TitleConsts {
@@ -282,6 +287,11 @@ impl Clone for TitleConsts {
             cursor_toroko: self.cursor_toroko,
             cursor_king: self.cursor_king,
             cursor_sue: self.cursor_sue,
+            handheld_cursor_quote: self.cursor_quote,
+            handheld_cursor_curly: self.cursor_curly,
+            handheld_cursor_toroko: self.cursor_toroko,
+            handheld_cursor_king: self.cursor_king,
+            handheld_cursor_sue: self.cursor_sue,
         }
     }
 }
@@ -1565,6 +1575,36 @@ impl EngineConstants {
                     Rect { left: 32, top: 16, right: 48, bottom: 32 },
                     Rect { left: 0, top: 16, right: 16, bottom: 32 },
                     Rect { left: 48, top: 16, right: 64, bottom: 32 },
+                ],
+                handheld_cursor_quote: [
+                    Rect { left: 0, top: 0, right: 16, bottom: 16 },
+                    Rect { left: 16, top: 0, right: 32, bottom: 16 },
+                    Rect { left: 0, top: 0, right: 16, bottom: 16 },
+                    Rect { left: 32, top: 0, right: 48, bottom: 16 },
+                ],
+                handheld_cursor_curly: [
+                    Rect { left: 0, top: 48, right: 16, bottom: 64 },
+                    Rect { left: 16, top: 48, right: 32, bottom: 64 },
+                    Rect { left: 0, top: 48, right: 16, bottom: 64 },
+                    Rect { left: 32, top: 48, right: 48, bottom: 64 },
+                ],
+                handheld_cursor_toroko: [
+                    Rect { left: 0, top: 64, right: 16, bottom: 80 },
+                    Rect { left: 16, top: 64, right: 32, bottom: 80 },
+                    Rect { left: 0, top: 64, right: 16, bottom: 80 },
+                    Rect { left: 32, top: 64, right: 48, bottom: 80 },
+                ],
+                handheld_cursor_king: [
+                    Rect { left: 0, top: 80, right: 16, bottom: 96 },
+                    Rect { left: 16, top: 80, right: 32, bottom: 96 },
+                    Rect { left: 0, top: 80, right: 16, bottom: 96 },
+                    Rect { left: 32, top: 80, right: 48, bottom: 96 },
+                ],
+                handheld_cursor_sue: [
+                    Rect { left: 0, top: 96, right: 16, bottom: 112 },
+                    Rect { left: 16, top: 96, right: 32, bottom: 112 },
+                    Rect { left: 0, top: 96, right: 16, bottom: 112 },
+                    Rect { left: 32, top: 96, right: 48, bottom: 112 },
                 ],
             },
             inventory_dim_color: Color::from_rgba(0, 0, 0, 0),

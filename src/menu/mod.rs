@@ -289,27 +289,51 @@ impl Menu {
         if !self.custom_cursor.get() {
             let menu_texture: &str;
             let character_rect: [Rect<u16>; 4];
-
-            match state.menu_character {
-                MenuCharacter::Quote => {
-                    menu_texture = "MyChar";
-                    character_rect = state.constants.title.cursor_quote;
+            if !state.constants.is_dsi { /*| !self.is_eshop*/
+                match state.menu_character {
+                    MenuCharacter::Quote => {
+                        menu_texture = "MyChar";
+                        character_rect = state.constants.title.cursor_quote;
+                    }
+                    MenuCharacter::Curly => {
+                        menu_texture = "Npc/NpcRegu";
+                        character_rect = state.constants.title.cursor_curly;
+                    }
+                    MenuCharacter::Toroko => {
+                        menu_texture = "Npc/NpcRegu";
+                        character_rect = state.constants.title.cursor_toroko;
+                    }
+                    MenuCharacter::King => {
+                        menu_texture = "Npc/NpcRegu";
+                        character_rect = state.constants.title.cursor_king;
+                    }
+                    MenuCharacter::Sue => {
+                        menu_texture = "Npc/NpcRegu";
+                        character_rect = state.constants.title.cursor_sue;
+                    }
                 }
-                MenuCharacter::Curly => {
-                    menu_texture = "Npc/NpcRegu";
-                    character_rect = state.constants.title.cursor_curly;
-                }
-                MenuCharacter::Toroko => {
-                    menu_texture = "Npc/NpcRegu";
-                    character_rect = state.constants.title.cursor_toroko;
-                }
-                MenuCharacter::King => {
-                    menu_texture = "Npc/NpcRegu";
-                    character_rect = state.constants.title.cursor_king;
-                }
-                MenuCharacter::Sue => {
-                    menu_texture = "Npc/NpcRegu";
-                    character_rect = state.constants.title.cursor_sue;
+            } else {
+                match state.menu_character {
+                    MenuCharacter::Quote => {
+                        menu_texture = "uichar";
+                        character_rect = state.constants.title.handheld_cursor_quote;
+                    }
+                    MenuCharacter::Curly => {
+                        menu_texture = "uichar";
+                        character_rect = state.constants.title.handheld_cursor_curly;
+                    }
+                    MenuCharacter::Toroko => {
+                        menu_texture = "uichar";
+                        character_rect = state.constants.title.handheld_cursor_toroko;
+                    }
+                    MenuCharacter::King => {
+                        menu_texture = "uichar";
+                        character_rect = state.constants.title.handheld_cursor_king;
+                    }
+                    MenuCharacter::Sue => {
+                        menu_texture = "uichar";
+                        character_rect = state.constants.title.handheld_cursor_sue;
+                    }
                 }
             }
 
