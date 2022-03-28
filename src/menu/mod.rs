@@ -504,7 +504,7 @@ impl Menu {
 
                     // Difficulty
                     if state.constants.supports_difficulty_costumes {
-                        if state.constants.is_cs_plus {
+                        if !state.constants.is_dsi /*|| state.constants.is.eshop*/ {
                             let difficulty = GameDifficulty::from_primitive(save.difficulty);
 
                             let batch = state.texture_set.get_or_load_batch(ctx, &state.constants, "MyChar")?;

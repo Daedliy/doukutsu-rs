@@ -727,9 +727,13 @@ impl SharedGameState {
     }
 
     pub fn get_skinsheet_offset(&self) -> u16 {
-        if !self.constants.is_cs_plus {
+        if !self.constants.supports_difficulty_costumes /*& !self.constants.supports_seasonal_costumes*/ {
             return 0;
         }
+
+        /*if self.constants.is_dsi /*| self.constants.is_eshop*/{ //separate as costumes are split
+            return 0;
+        }*/
 
         if self.settings.seasonal_textures {
             let season = Season::current();
