@@ -1734,12 +1734,55 @@ impl EngineConstants {
         let _ = sound_manager.set_sample_params(2, typewriter_sample);
     }
 
-    pub fn apply_cs_twl_patches(&mut self, sound_manager: &SoundManager) {
+    pub fn apply_cs_twl_patches(&mut self) {
         log::info!("Applying DSi-specific Cave Story constants patches...");
         self.is_dsi = true;
         self.supports_difficulty_costumes = true;
         self.textscript.encrypted = false;
         self.supports_jukebox = true;
+        self.tex_sizes.insert("ui".to_owned(), (72, 24));
+
+        self.title.logo_rect = Rect { left: 0, top: 0, right: 208, bottom: 50 };
+        self.title.menu_left_top = Rect { left: 0, top: 0, right: 8, bottom: 8 };
+        self.title.menu_right_top = Rect { left: 16, top: 0, right: 24, bottom: 8 };
+        self.title.menu_left_bottom = Rect { left: 48, top: 0, right: 56, bottom: 8 };
+        self.title.menu_right_bottom = Rect { left: 64, top: 0, right: 72, bottom: 8 };
+
+        self.title.menu_top = Rect { left: 8, top: 0, right: 16, bottom: 8 };
+        self.title.menu_middle = Rect { left: 32, top: 0, right: 40, bottom: 8 };
+        self.title.menu_left = Rect { left: 24, top: 0, right: 32, bottom: 8 };
+        self.title.menu_right = Rect { left: 40, top: 0, right: 48, bottom: 8 };
+        self.title.menu_bottom = Rect { left: 56, top: 0, right: 64, bottom: 8 };
+
+        self.textscript.textbox_rect_top = Rect { left: 8, top: 0, right: 32, bottom: 8 };
+        self.textscript.textbox_rect_middle = Rect { left: 8, top: 8, right: 32, bottom: 16 };
+        self.textscript.textbox_rect_bottom = Rect { left: 8, top: 16, right: 32, bottom: 24 };
+        self.textscript.textbox_rect_yes_no = Rect { left: 32, top: 0, right: 100, bottom:24 };
+
+        self.textscript.get_item_top_left = Rect { left: 8, top: 0, right: 16, bottom: 8 };
+        self.textscript.get_item_bottom_left = Rect { left: 8, top: 16, right: 16, bottom: 24 };
+        self.textscript.get_item_top_right = Rect { left: 20, top: 0, right: 28, bottom: 8 };
+        self.textscript.get_item_right = Rect { left: 20, top: 8, right: 28, bottom: 16 };
+        self.textscript.get_item_bottom_right = Rect { left: 20, top: 16, right: 28, bottom: 24 };
+
+        self.textscript.inventory_rect_top = Rect { left: 8, top: 0, right: 32, bottom: 8 };
+        self.textscript.inventory_rect_middle = Rect { left: 8, top: 8, right: 32, bottom: 16 };
+        self.textscript.inventory_rect_bottom = Rect { left: 8, top: 16, right: 32, bottom: 24 };
+        self.textscript.inventory_text_arms = Rect { left: 0, top: 8, right: 8, bottom: 16 }; //ARMS and ITEMS are invisible, this sets them to a transparent tile
+        self.textscript.inventory_text_item = Rect { left: 0, top: 8, right: 8, bottom: 16 }; //in Subtextbox1.bmp
+
+        self.textscript.cursor = [
+            Rect { left: 0, top: 24, right: 8, bottom: 32 },   //todo find out how to build full tiles for these since
+            Rect { left: 72, top: 24, right: 80, bottom: 32 }, //Subtextbox1 is pretty terrible, i guess i need metatiles
+        ];
+        self.textscript.cursor_inventory_weapon = [
+            Rect { left: 0, top: 24, right: 8, bottom: 32 },
+            Rect { left: 72, top: 24, right: 80, bottom: 32 },
+        ];
+        self.textscript.cursor_inventory_item = [
+            Rect { left: 0, top: 24, right: 8, bottom: 32 },
+            Rect { left: 72, top: 24, right: 80, bottom: 32 },
+        ];
     }
 
 

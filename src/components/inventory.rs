@@ -283,7 +283,7 @@ impl GameEntity<(&mut Context, &mut Player, &mut Inventory)> for InventoryUI {
         let x = (((state.canvas_size.0 - off_left - off_right) - 244.0) / 2.0).floor() + off_left;
         let y = 8.0 + off_top;
 
-        let batch = state.texture_set.get_or_load_batch(ctx, &state.constants, "TextBox")?;
+        let batch = if !state.constants.is_dsi {state.texture_set.get_or_load_batch(ctx, &state.constants, "TextBox")?} else {state.texture_set.get_or_load_batch(ctx, &state.constants, "subtextbox1")?};
         for i in 0..=18 {
             let rect = match i {
                 0 => &state.constants.textscript.inventory_rect_top,

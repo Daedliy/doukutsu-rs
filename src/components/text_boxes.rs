@@ -74,7 +74,7 @@ impl GameEntity<()> for TextBoxes {
         let left_pos = off_left + center - 122.0;
 
         {
-            let batch = state.texture_set.get_or_load_batch(ctx, &state.constants, "TextBox")?;
+            let batch = if !state.constants.is_dsi {state.texture_set.get_or_load_batch(ctx, &state.constants, "TextBox")?} else {state.texture_set.get_or_load_batch(ctx, &state.constants, "subtextbox1")?};
             if state.textscript_vm.flags.background_visible() {
                 batch.add_rect(left_pos, top_pos, &state.constants.textscript.textbox_rect_top);
                 for i in 1..7 {
