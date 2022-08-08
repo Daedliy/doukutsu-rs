@@ -316,6 +316,7 @@ pub struct EngineConstants {
     pub base_paths: Vec<String>,
     pub is_cs_plus: bool,
     pub is_switch: bool,
+    pub is_freeware_plus: bool,
     pub supports_og_textures: bool,
     pub game: GameConsts,
     pub player: PlayerConsts,
@@ -348,6 +349,7 @@ impl Clone for EngineConstants {
             base_paths: self.base_paths.clone(),
             is_cs_plus: self.is_cs_plus,
             is_switch: self.is_switch,
+            is_freeware_plus: self.is_freeware_plus,
             supports_og_textures: self.supports_og_textures,
             game: self.game,
             player: self.player,
@@ -382,6 +384,7 @@ impl EngineConstants {
             base_paths: Vec::new(),
             is_cs_plus: false,
             is_switch: false,
+            is_freeware_plus: false,
             supports_og_textures: false,
             game: GameConsts {
                 intro_stage: 72,
@@ -1697,7 +1700,7 @@ impl EngineConstants {
         self.tex_sizes.insert("Npc/NpcRegu".to_owned(), (320, 410));
         self.tex_sizes.insert("ui".to_owned(), (128, 32));
         self.textscript.reset_invicibility_on_any_script = false;
-        self.title.logo_rect = Rect { left: 0, top: 0, right: 214, bottom: 50 };
+        self.title.logo_rect = Rect { left: 0, top: 0, right: 216, bottom: 56 };
 
         self.title.menu_left_top = Rect { left: 0, top: 0, right: 4, bottom: 4 };
         self.title.menu_right_top = Rect { left: 12, top: 0, right: 16, bottom: 4 };
@@ -1758,6 +1761,27 @@ impl EngineConstants {
         self.textscript.fade_ticks = 21;
         self.game.tile_offset_x = 3;
         self.game.new_game_player_pos = (13, 8);
+    }
+
+    pub fn apply_freewareplus_patches(&mut self) {
+        log::info!("Applying Freeware+ constants patches...");
+        self.is_freeware_plus = true;
+        self.textscript.encrypted = false;
+        self.title.logo_rect = Rect { left: 0, top: 0, right: 208, bottom: 56 };
+        //UI tex size
+        self.tex_sizes.insert("ui".to_owned(), (72, 24));
+        self.tex_sizes.insert("uimusic".to_owned(), (192, 144));
+        //UI corner rects
+        self.title.menu_left_top = Rect { left: 0, top: 0, right: 8, bottom: 8 };
+        self.title.menu_right_top = Rect { left: 16, top: 0, right: 24, bottom: 8 };
+        self.title.menu_left_bottom = Rect { left: 48, top: 0, right: 56, bottom: 8 };
+        self.title.menu_right_bottom = Rect { left: 64, top: 0, right: 72, bottom: 8 };
+        //ui side rects
+        self.title.menu_top = Rect { left: 8, top: 0, right: 16, bottom: 8 };
+        self.title.menu_middle = Rect { left: 8 * 4, top: 0, right: 8 * 5, bottom: 8 };
+        self.title.menu_bottom = Rect { left: 56, top: 0, right: 64, bottom: 8 };
+        self.title.menu_left = Rect { left: 8 * 3, top: 0, right: 8 * 4, bottom: 8 };
+        self.title.menu_right = Rect { left: 8 * 5, top: 0, right: 8 * 6, bottom: 8 };
     }
 
     pub fn rebuild_path_list(&mut self, mod_path: Option<String>, season: Season, settings: &Settings) {

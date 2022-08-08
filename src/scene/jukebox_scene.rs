@@ -176,9 +176,11 @@ impl Scene for JukeboxScene {
         let num_songs = self.song_list.len();
         let mut rect = Rect { left: 0_u16, top: 0, right: 0, bottom: 0 };
 
-        fn selected(mut rect: Rect<u16>, offset: u16) -> Rect<u16> {
-            rect.left += offset;
-            rect.right += offset;
+        fn selected(mut rect: Rect<u16>, yoffset: u16, xoffset: u16) -> Rect<u16> {
+            rect.left += yoffset;
+            rect.right += yoffset;
+            rect.top += xoffset;
+            rect.bottom += xoffset;
             rect
         }
 
@@ -209,27 +211,31 @@ impl Scene for JukeboxScene {
             let right = left + block_size - buffer;
             let bottom = top + block_size - buffer;
 
-            let selected_offset = if iter == self.selected_song as usize { 16 } else { 0 };
+            let selected_x = if !state.constants.is_freeware_plus { 16 } else { 0 };
+            let selected_y = if !state.constants.is_freeware_plus { 0 } else { 8 };
+
+            let selected_offset_x = if iter == self.selected_song as usize { selected_x } else { 0 };
+            let selected_offset_y = if iter == self.selected_song as usize { selected_y } else { 0 };
 
             batch.add_rect(
                 init_x + left,
                 init_y + top,
-                &selected(state.constants.title.menu_left_top, selected_offset),
+                &selected(state.constants.title.menu_left_top, selected_offset_x, selected_offset_y),
             );
             batch.add_rect(
                 init_x + right,
                 init_y + top,
-                &selected(state.constants.title.menu_right_top, selected_offset),
+                &selected(state.constants.title.menu_right_top, selected_offset_x, selected_offset_y),
             );
             batch.add_rect(
                 init_x + left,
                 init_y + bottom,
-                &selected(state.constants.title.menu_left_bottom, selected_offset),
+                &selected(state.constants.title.menu_left_bottom, selected_offset_x, selected_offset_y),
             );
             batch.add_rect(
                 init_x + right,
                 init_y + bottom,
-                &selected(state.constants.title.menu_right_bottom, selected_offset),
+                &selected(state.constants.title.menu_right_bottom, selected_offset_x, selected_offset_y),
             );
 
             let mut rect = state.constants.title.menu_top;
@@ -250,8 +256,12 @@ impl Scene for JukeboxScene {
                 };
                 rect2.right = rect.right;
 
-                batch.add_rect(x, y - rect.height() as f32, &selected(rect, selected_offset));
-                batch.add_rect(x, y + block_size - buffer - rect.height() as f32, &selected(rect2, selected_offset));
+                batch.add_rect(x, y - rect.height() as f32, &selected(rect, selected_offset_x, selected_offset_y));
+                batch.add_rect(
+                    x,
+                    y + block_size - buffer - rect.height() as f32,
+                    &selected(rect2, selected_offset_x, selected_offset_y), //this is probably the missing
+                );
                 x += rect.width() as f32;
             }
 
@@ -269,8 +279,8 @@ impl Scene for JukeboxScene {
                 };
                 rect2.bottom = rect.bottom;
 
-                batch.add_rect(x, y, &selected(rect, selected_offset));
-                batch.add_rect(x + block_size - buffer, y, &selected(rect2, selected_offset));
+                batch.add_rect(x, y, &selected(rect, selected_offset_x, selected_offset_y));
+                batch.add_rect(x + block_size - buffer, y, &selected(rect2, selected_offset_x, selected_offset_y));
                 y += rect.height() as f32;
             }
         }

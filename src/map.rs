@@ -14,7 +14,7 @@ use crate::framework::filesystem;
 use crate::shared_game_state::TileSize;
 use crate::stage::{PxPackScroll, PxPackStageData, StageData};
 
-static SUPPORTED_PXM_VERSIONS: [u8; 1] = [0x10];
+static SUPPORTED_PXM_VERSIONS: [u8; 2] = [0x10, 0x20];
 static SUPPORTED_PXE_VERSIONS: [u8; 2] = [0, 0x10];
 
 #[derive(Clone)]

@@ -208,7 +208,7 @@ impl Scene for TitleScene {
             self.main_menu.push_entry(MainMenuEntry::Editor, MenuEntry::Active(state.t("menus.main_menu.editor")));
         }
 
-        if state.constants.is_switch {
+        if state.constants.is_switch | state.constants.is_freeware_plus {
             self.main_menu.push_entry(MainMenuEntry::Jukebox, MenuEntry::Active(state.t("menus.main_menu.jukebox")));
         }
 

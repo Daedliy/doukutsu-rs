@@ -217,7 +217,7 @@ impl<T: std::cmp::PartialEq + std::default::Default + Copy> Menu<T> {
     }
 
     pub fn draw(&self, state: &mut SharedGameState, ctx: &mut Context) -> GameResult {
-        let ui_texture = if state.constants.is_cs_plus { "ui" } else { "TextBox" };
+        let ui_texture = if state.constants.is_cs_plus | state.constants.is_freeware_plus { "ui" } else { "TextBox" };
         let batch = state.texture_set.get_or_load_batch(ctx, &state.constants, ui_texture)?;
 
         let mut rect;
