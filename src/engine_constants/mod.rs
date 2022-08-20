@@ -249,6 +249,7 @@ pub struct TextScriptConsts {
 pub struct TitleConsts {
     pub intro_text: String,
     pub logo_rect: Rect<u16>,
+    pub logo_splash_rect: Rect<u16>,
     pub menu_left_top: Rect<u16>,
     pub menu_right_top: Rect<u16>,
     pub menu_left_bottom: Rect<u16>,
@@ -270,6 +271,7 @@ impl Clone for TitleConsts {
         TitleConsts {
             intro_text: self.intro_text.clone(),
             logo_rect: self.logo_rect,
+            logo_splash_rect: self.logo_splash_rect,
             menu_left_top: self.menu_left_top,
             menu_right_top: self.menu_right_top,
             menu_left_bottom: self.menu_left_bottom,
@@ -316,6 +318,7 @@ pub struct EngineConstants {
     pub base_paths: Vec<String>,
     pub is_cs_plus: bool,
     pub is_switch: bool,
+    pub is_demo: bool,
     pub is_freeware_plus: bool,
     pub supports_og_textures: bool,
     pub game: GameConsts,
@@ -349,6 +352,7 @@ impl Clone for EngineConstants {
             base_paths: self.base_paths.clone(),
             is_cs_plus: self.is_cs_plus,
             is_switch: self.is_switch,
+            is_demo: self.is_demo,
             is_freeware_plus: self.is_freeware_plus,
             supports_og_textures: self.supports_og_textures,
             game: self.game,
@@ -384,6 +388,7 @@ impl EngineConstants {
             base_paths: Vec::new(),
             is_cs_plus: false,
             is_switch: false,
+            is_demo: false,
             is_freeware_plus: false,
             supports_og_textures: false,
             game: GameConsts {
@@ -1551,6 +1556,7 @@ impl EngineConstants {
             title: TitleConsts {
                 intro_text: "Studio Pixel presents".to_owned(),
                 logo_rect: Rect { left: 0, top: 0, right: 144, bottom: 40 },
+                logo_splash_rect: Rect { left: 0, top: 0, right: 0, bottom: 0 }, //Hidden so patches can display splash art / subtitle
                 menu_left_top: Rect { left: 0, top: 0, right: 8, bottom: 8 },
                 menu_right_top: Rect { left: 236, top: 0, right: 244, bottom: 8 },
                 menu_left_bottom: Rect { left: 0, top: 16, right: 8, bottom: 24 },
@@ -1700,7 +1706,7 @@ impl EngineConstants {
         self.tex_sizes.insert("Npc/NpcRegu".to_owned(), (320, 410));
         self.tex_sizes.insert("ui".to_owned(), (128, 32));
         self.textscript.reset_invicibility_on_any_script = false;
-        self.title.logo_rect = Rect { left: 0, top: 0, right: 216, bottom: 56 };
+        self.title.logo_rect = Rect { left: 0, top: 0, right: 216, bottom: 48 };
 
         self.title.menu_left_top = Rect { left: 0, top: 0, right: 4, bottom: 4 };
         self.title.menu_right_top = Rect { left: 12, top: 0, right: 16, bottom: 4 };
@@ -1761,6 +1767,17 @@ impl EngineConstants {
         self.textscript.fade_ticks = 21;
         self.game.tile_offset_x = 3;
         self.game.new_game_player_pos = (13, 8);
+    }
+
+    pub fn apply_csdemo_patches(&mut self) {
+        log::info!("Applying Wiiware DEMO-specific Cave Story+ constants patches...");
+
+        self.is_demo = true;
+        self.supports_og_textures = true;
+        self.game.new_game_stage = 11;
+        self.game.new_game_event = 302;
+        self.game.new_game_player_pos = (8, 6);
+        self.title.logo_splash_rect = Rect { left: 224, top: 0, right: 320, bottom: 48 };
     }
 
     pub fn apply_freewareplus_patches(&mut self) {

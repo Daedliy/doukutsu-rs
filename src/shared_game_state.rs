@@ -243,11 +243,26 @@ pub enum MenuCharacter {
     Sue,
 }
 
+#[derive(PartialEq, Eq, Copy, Clone, Debug)]
+pub enum ReplayKind {
+    Best,
+    Last,
+}
+
+impl ReplayKind {
+    pub fn get_suffix(&self) -> String {
+        match self {
+            ReplayKind::Best => ".rep".to_string(),
+            ReplayKind::Last => ".last.rep".to_string(),
+        }
+    }
+}
+
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub enum ReplayState {
     None,
     Recording,
-    Playback,
+    Playback(ReplayKind),
 }
 
 #[derive(PartialEq, Eq, Copy, Clone)]
@@ -285,6 +300,8 @@ pub struct SharedGameState {
     pub tile_size: TileSize,
     pub quake_counter: u16,
     pub super_quake_counter: u16,
+    pub quake_rumble_counter: u32,
+    pub super_quake_rumble_counter: u32,
     pub teleporter_slots: Vec<(u16, u16)>,
     pub carets: Vec<Caret>,
     pub touch_controls: TouchControls,
@@ -322,6 +339,7 @@ pub struct SharedGameState {
     pub replay_state: ReplayState,
     pub mod_requirements: ModRequirements,
     pub tutorial_counter: u16,
+    pub more_rust: bool,
     pub shutdown: bool,
 }
 
@@ -347,7 +365,9 @@ impl SharedGameState {
             constants.apply_csplus_nx_patches();
             constants.load_nx_stringtable(ctx)?;
         } else if filesystem::exists(ctx, "/base/ogph/SellScreen.bmp") {
-            error!("WiiWare DEMO data files detected. !UNSUPPORTED!"); //Missing credits.tsc and crashes due to missing Stage 13 (Start)
+            info!("WiiWare DEMO data files detected.");
+            constants.apply_csplus_patches(&mut sound_manager);
+            constants.apply_csdemo_patches();
         } else if filesystem::exists(ctx, "/base/strap_a_en.bmp") {
             info!("WiiWare data files detected."); //Missing Challenges and Remastered Soundtrack but identical to CS+ PC otherwise
             constants.apply_csplus_patches(&mut sound_manager);
@@ -409,6 +429,9 @@ impl SharedGameState {
         sound_manager.set_song_volume(settings.bgm_volume);
         sound_manager.set_sfx_volume(settings.sfx_volume);
 
+        let current_time = Local::now();
+        let more_rust = (current_time.month() == 7 && current_time.day() == 7) || settings.more_rust;
+
         #[cfg(feature = "hooks")]
         init_hooks();
 
@@ -423,6 +446,8 @@ impl SharedGameState {
             tile_size: TileSize::Tile16x16,
             quake_counter: 0,
             super_quake_counter: 0,
+            quake_rumble_counter: 0,
+            super_quake_rumble_counter: 0,
             teleporter_slots: Vec::with_capacity(8),
             carets: Vec::with_capacity(32),
             touch_controls: TouchControls::new(),
@@ -460,6 +485,7 @@ impl SharedGameState {
             replay_state: ReplayState::None,
             mod_requirements,
             tutorial_counter: 0,
+            more_rust,
             shutdown: false,
         })
     }
@@ -500,7 +526,10 @@ impl SharedGameState {
 
     pub fn reload_resources(&mut self, ctx: &mut Context) -> GameResult {
         self.constants.rebuild_path_list(self.mod_path.clone(), self.season, &self.settings);
-        self.constants.special_treatment_for_csplus_mods(self.mod_path.as_ref());
+        if !self.constants.is_demo {
+            //TODO find a more elegant way to handle this
+            self.constants.special_treatment_for_csplus_mods(self.mod_path.as_ref());
+        }
         self.constants.load_csplus_tables(ctx)?;
         self.constants.load_animated_faces(ctx)?;
         self.constants.load_texture_size_hints(ctx)?;
@@ -526,9 +555,11 @@ impl SharedGameState {
         let substitution_rect_map = HashMap::from([('=', self.constants.textscript.textbox_item_marker_rect)]);
         self.textscript_vm.set_substitution_rect_map(substitution_rect_map);
 
-        let credit_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "Credit.tsc")?;
-        let credit_script = CreditScript::load_from(credit_tsc, &self.constants)?;
-        self.creditscript_vm.set_script(credit_script);
+        if filesystem::exists_find(ctx, &self.constants.base_paths, "Credit.tsc") {
+            let credit_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "Credit.tsc")?;
+            let credit_script = CreditScript::load_from(credit_tsc, &self.constants)?;
+            self.creditscript_vm.set_script(credit_script);
+        }
 
         self.texture_set.unload_all();
 
@@ -802,13 +833,13 @@ impl SharedGameState {
         }
     }
 
-    pub fn has_replay_data(&self, ctx: &mut Context) -> bool {
-        filesystem::user_exists(ctx, [self.get_rec_filename(), ".rep".to_string()].join(""))
+    pub fn has_replay_data(&self, ctx: &mut Context, replay_kind: ReplayKind) -> bool {
+        filesystem::user_exists(ctx, [self.get_rec_filename(), replay_kind.get_suffix()].join(""))
     }
 
-    pub fn delete_replay_data(&self, ctx: &mut Context) -> GameResult {
-        if self.has_replay_data(ctx) {
-            filesystem::user_delete(ctx, [self.get_rec_filename(), ".rep".to_string()].join(""))?;
+    pub fn delete_replay_data(&self, ctx: &mut Context, replay_kind: ReplayKind) -> GameResult {
+        if self.has_replay_data(ctx, replay_kind) {
+            filesystem::user_delete(ctx, [self.get_rec_filename(), replay_kind.get_suffix()].join(""))?;
         }
         Ok(())
     }

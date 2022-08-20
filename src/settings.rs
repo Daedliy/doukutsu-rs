@@ -55,6 +55,10 @@ pub struct Settings {
     pub player1_controller_axis_sensitivity: f64,
     #[serde(default = "default_controller_axis_sensitivity")]
     pub player2_controller_axis_sensitivity: f64,
+    #[serde(default = "default_rumble")]
+    pub player1_rumble: bool,
+    #[serde(default = "default_rumble")]
+    pub player2_rumble: bool,
     #[serde(skip, default = "default_speed")]
     pub speed: f64,
     #[serde(skip)]
@@ -74,6 +78,7 @@ pub struct Settings {
     pub debug_mode: bool,
     #[serde(skip)]
     pub noclip: bool,
+    pub more_rust: bool,
 }
 
 fn default_true() -> bool {
@@ -82,7 +87,7 @@ fn default_true() -> bool {
 
 #[inline(always)]
 fn current_version() -> u32 {
-    17
+    19
 }
 
 #[inline(always)]
@@ -133,6 +138,11 @@ fn default_controller_type() -> ControllerType {
 #[inline(always)]
 fn default_pause_on_focus_loss() -> bool {
     true
+}
+
+#[inline(always)]
+fn default_rumble() -> bool {
+    false
 }
 
 impl Settings {
@@ -270,6 +280,17 @@ impl Settings {
             }
         }
 
+        if self.version == 17 {
+            self.version = 18;
+            self.player1_rumble = default_rumble();
+            self.player2_rumble = default_rumble();
+        }
+
+        if self.version == 18 {
+            self.version = 19;
+            self.more_rust = false;
+        }
+
         if self.version != initial_version {
             log::info!("Upgraded configuration file from version {} to {}.", initial_version, self.version);
         }
@@ -293,7 +314,9 @@ impl Settings {
             ControllerType::Keyboard => Box::new(KeyboardController::new(TargetPlayer::Player1)),
             ControllerType::Gamepad(index) => {
                 let keyboard_controller = Box::new(KeyboardController::new(TargetPlayer::Player1));
-                let gamepad_controller = Box::new(GamepadController::new(index, TargetPlayer::Player1));
+
+                let mut gamepad_controller = Box::new(GamepadController::new(index, TargetPlayer::Player1));
+                gamepad_controller.set_rumble_enabled(self.player1_rumble);
 
                 let mut combined_player_controller = CombinedPlayerController::new();
                 combined_player_controller.add(keyboard_controller);
@@ -309,7 +332,9 @@ impl Settings {
             ControllerType::Keyboard => Box::new(KeyboardController::new(TargetPlayer::Player2)),
             ControllerType::Gamepad(index) => {
                 let keyboard_controller = Box::new(KeyboardController::new(TargetPlayer::Player2));
-                let gamepad_controller = Box::new(GamepadController::new(index, TargetPlayer::Player2));
+
+                let mut gamepad_controller = Box::new(GamepadController::new(index, TargetPlayer::Player2));
+                gamepad_controller.set_rumble_enabled(self.player2_rumble);
 
                 let mut combined_player_controller = CombinedPlayerController::new();
                 combined_player_controller.add(keyboard_controller);
@@ -356,6 +381,8 @@ impl Default for Settings {
             player2_controller_button_map: player_default_controller_button_map(),
             player1_controller_axis_sensitivity: default_controller_axis_sensitivity(),
             player2_controller_axis_sensitivity: default_controller_axis_sensitivity(),
+            player1_rumble: default_rumble(),
+            player2_rumble: default_rumble(),
             speed: 1.0,
             god_mode: false,
             infinite_booster: false,
@@ -367,6 +394,7 @@ impl Default for Settings {
             screen_shake_intensity: ScreenShakeIntensity::Full,
             debug_mode: false,
             noclip: false,
+            more_rust: false,
         }
     }
 }

@@ -31,7 +31,7 @@ use crate::framework::context::Context;
 use crate::framework::error::GameResult;
 use crate::framework::graphics::{draw_rect, BlendMode, FilterMode};
 use crate::framework::ui::Components;
-use crate::framework::{filesystem, graphics};
+use crate::framework::{filesystem, gamepad, graphics};
 use crate::input::touch_controls::TouchControlType;
 use crate::inventory::{Inventory, TakeExperienceResult};
 use crate::map::WaterParams;
@@ -1633,8 +1633,10 @@ impl Scene for GameScene {
             self.drop_player2();
         }
 
-        if state.mod_path.is_some() && state.replay_state == ReplayState::Playback {
-            self.replay.initialize_playback(state, ctx)?;
+        if state.mod_path.is_some() {
+            if let ReplayState::Playback(replay_kind) = state.replay_state {
+                self.replay.initialize_playback(state, ctx, replay_kind)?;
+            }
         }
 
         self.npc_list.set_rng_seed(state.game_rng.next());
@@ -1724,8 +1726,10 @@ impl Scene for GameScene {
     }
 
     fn tick(&mut self, state: &mut SharedGameState, ctx: &mut Context) -> GameResult {
-        if !self.pause_menu.is_paused() && state.replay_state == ReplayState::Playback {
-            self.replay.tick(state, (ctx, &mut self.player1))?;
+        if !self.pause_menu.is_paused() {
+            if let ReplayState::Playback(_) = state.replay_state {
+                self.replay.tick(state, (ctx, &mut self.player1))?;
+            }
         }
 
         self.player1.controller.update(state, ctx)?;
@@ -1844,6 +1848,16 @@ impl Scene for GameScene {
             if state.control_flags.control_enabled() {
                 state.tutorial_counter = 0;
             }
+        }
+
+        if state.quake_rumble_counter > 0 {
+            gamepad::set_quake_rumble_all(ctx, state, state.quake_rumble_counter)?;
+            state.quake_rumble_counter = 0;
+        }
+
+        if state.super_quake_rumble_counter > 0 {
+            gamepad::set_super_quake_rumble_all(ctx, state, state.super_quake_rumble_counter)?;
+            state.super_quake_rumble_counter = 0;
         }
 
         Ok(())

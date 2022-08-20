@@ -658,6 +658,7 @@ impl NPC {
                     {
                         self.anim_num = 6;
                         state.quake_counter = 10;
+                        state.quake_rumble_counter = 10;
                         state.sound_manager.play_sfx(26);
 
                         player.damage(5, state, npc_list);
@@ -741,6 +742,7 @@ impl NPC {
                     self.action_counter = 0;
 
                     state.quake_counter = 10;
+                    state.quake_rumble_counter = 10;
                     state.sound_manager.play_sfx(26);
                 }
 
@@ -927,6 +929,16 @@ impl NPC {
                     self.face_player(player);
                 }
             }
+            501 => {
+                self.anim_num = 9;
+
+                self.action_counter += 1;
+                if self.action_counter / 2 % 2 != 0 {
+                    self.x = self.target_x;
+                } else {
+                    self.x = self.x.wrapping_add(0x200);
+                }
+            }
             510 | 511 => {
                 if self.action_num == 510 {
                     self.action_num = 511;
@@ -938,6 +950,7 @@ impl NPC {
                 }
 
                 state.quake_counter = 2;
+                state.quake_rumble_counter = 2;
                 self.action_counter += 1;
                 if self.action_counter % 6 == 3 {
                     state.sound_manager.play_sfx(25);
