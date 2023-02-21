@@ -27,6 +27,7 @@ enum CurrentMenu {
     LanguageMenu,
     BehaviorMenu,
     LinksMenu,
+    AdvancedMenu,
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -37,6 +38,7 @@ enum MainMenuEntry {
     Language,
     Behavior,
     Links,
+    Advanced,
     Back,
 }
 
@@ -112,6 +114,8 @@ enum BehaviorMenuEntry {
     GameTiming,
     PauseOnFocusLoss,
     CutsceneSkipMode,
+    #[cfg(feature = "discord-rpc")]
+    DiscordRPC,
     Back,
 }
 
@@ -134,6 +138,20 @@ impl Default for LinksMenuEntry {
     }
 }
 
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+enum AdvancedMenuEntry {
+    Title,
+    OpenUserData,
+    OpenGameData,
+    Back,
+}
+
+impl Default for AdvancedMenuEntry {
+    fn default() -> Self {
+        AdvancedMenuEntry::OpenUserData
+    }
+}
+
 pub struct SettingsMenu {
     current: CurrentMenu,
     main: Menu<MainMenuEntry>,
@@ -143,6 +161,7 @@ pub struct SettingsMenu {
     language: Menu<LanguageMenuEntry>,
     behavior: Menu<BehaviorMenuEntry>,
     links: Menu<LinksMenuEntry>,
+    advanced: Menu<AdvancedMenuEntry>,
     controls_menu: ControlsMenu,
     pub on_title: bool,
 }
@@ -164,6 +183,7 @@ impl SettingsMenu {
         let language = Menu::new(0, 0, 120, 0);
         let behavior = Menu::new(0, 0, 220, 0);
         let links = Menu::new(0, 0, 220, 0);
+        let advanced = Menu::new(0, 0, 220, 0);
 
         let controls_menu = ControlsMenu::new();
 
@@ -176,6 +196,7 @@ impl SettingsMenu {
             language,
             behavior,
             links,
+            advanced,
             controls_menu,
             on_title: false,
         }
@@ -349,6 +370,26 @@ impl SettingsMenu {
         );
         self.links.push_entry(LinksMenuEntry::Link(GETPLUS_LINK), MenuEntry::Active("Get Cave Story+".to_owned()));
 
+        #[cfg(not(any(target_os = "android", target_os = "horizon")))]
+        self.main.push_entry(
+            MainMenuEntry::Advanced,
+            MenuEntry::Active(state.loc.t("menus.options_menu.advanced").to_owned()),
+        );
+
+        self.advanced.push_entry(
+            AdvancedMenuEntry::Title,
+            MenuEntry::Disabled(state.loc.t("menus.options_menu.advanced").to_owned()),
+        );
+        self.advanced.push_entry(
+            AdvancedMenuEntry::OpenUserData,
+            MenuEntry::Active(state.loc.t("menus.options_menu.advanced_menu.open_user_data").to_owned()),
+        );
+        self.advanced.push_entry(
+            AdvancedMenuEntry::OpenGameData,
+            MenuEntry::Active(state.loc.t("menus.options_menu.advanced_menu.open_game_data").to_owned()),
+        );
+        self.advanced.push_entry(AdvancedMenuEntry::Back, MenuEntry::Active(state.loc.t("common.back").to_owned()));
+
         self.main.push_entry(MainMenuEntry::Back, MenuEntry::Active(state.loc.t("common.back").to_owned()));
 
         self.sound.push_entry(
@@ -461,6 +502,15 @@ impl SettingsMenu {
             ),
         );
 
+        #[cfg(feature = "discord-rpc")]
+        self.behavior.push_entry(
+            BehaviorMenuEntry::DiscordRPC,
+            MenuEntry::Toggle(
+                state.loc.t("menus.options_menu.behavior_menu.discord_rpc").to_owned(),
+                state.settings.discord_rpc,
+            ),
+        );
+
         self.behavior.push_entry(BehaviorMenuEntry::Back, MenuEntry::Active(state.loc.t("common.back").to_owned()));
 
         self.links.push_entry(LinksMenuEntry::Back, MenuEntry::Active(state.loc.t("common.back").to_owned()));
@@ -507,6 +557,11 @@ impl SettingsMenu {
         self.links.update_height();
         self.links.x = ((state.canvas_size.0 - self.links.width as f32) / 2.0).floor() as isize;
         self.links.y = 30 + ((state.canvas_size.1 - self.links.height as f32) / 2.0).floor() as isize;
+
+        self.advanced.update_width(state);
+        self.advanced.update_height();
+        self.advanced.x = ((state.canvas_size.0 - self.advanced.width as f32) / 2.0).floor() as isize;
+        self.advanced.y = 30 + ((state.canvas_size.1 - self.advanced.height as f32) / 2.0).floor() as isize;
     }
 
     pub fn tick(
@@ -537,6 +592,9 @@ impl SettingsMenu {
                 }
                 MenuSelectionResult::Selected(MainMenuEntry::Links, _) => {
                     self.current = CurrentMenu::LinksMenu;
+                }
+                MenuSelectionResult::Selected(MainMenuEntry::Advanced, _) => {
+                    self.current = CurrentMenu::AdvancedMenu;
                 }
                 MenuSelectionResult::Selected(MainMenuEntry::Back, _) | MenuSelectionResult::Canceled => exit_action(),
                 _ => (),
@@ -852,6 +910,26 @@ impl SettingsMenu {
                         let _ = state.settings.save(ctx);
                     }
                 }
+                #[cfg(feature = "discord-rpc")]
+                MenuSelectionResult::Selected(BehaviorMenuEntry::DiscordRPC, toggle) => {
+                    if let MenuEntry::Toggle(_, value) = toggle {
+                        state.settings.discord_rpc = !state.settings.discord_rpc;
+                        let _ = state.settings.save(ctx);
+
+                        *value = state.settings.discord_rpc;
+                        state.discord_rpc.enabled = state.settings.discord_rpc;
+
+                        if state.discord_rpc.enabled {
+                            if !state.discord_rpc.ready {
+                                state.discord_rpc.start()?;
+                            }
+
+                            state.discord_rpc.set_idling()?;
+                        } else {
+                            state.discord_rpc.clear()?;
+                        }
+                    }
+                }
                 MenuSelectionResult::Selected(BehaviorMenuEntry::Back, _) | MenuSelectionResult::Canceled => {
                     self.current = CurrentMenu::MainMenu;
                 }
@@ -868,6 +946,22 @@ impl SettingsMenu {
                 }
                 _ => (),
             },
+            CurrentMenu::AdvancedMenu => match self.advanced.tick(controller, state) {
+                MenuSelectionResult::Selected(AdvancedMenuEntry::OpenUserData, _) => {
+                    if let Some(fs_container) = &state.fs_container {
+                        fs_container.open_user_directory()?;
+                    }
+                }
+                MenuSelectionResult::Selected(AdvancedMenuEntry::OpenGameData, _) => {
+                    if let Some(fs_container) = &state.fs_container {
+                        fs_container.open_game_directory()?;
+                    }
+                }
+                MenuSelectionResult::Selected(AdvancedMenuEntry::Back, _) | MenuSelectionResult::Canceled => {
+                    self.current = CurrentMenu::MainMenu;
+                }
+                _ => {}
+            },
         }
         Ok(())
     }
@@ -882,6 +976,7 @@ impl SettingsMenu {
             CurrentMenu::LanguageMenu => self.language.draw(state, ctx)?,
             CurrentMenu::BehaviorMenu => self.behavior.draw(state, ctx)?,
             CurrentMenu::LinksMenu => self.links.draw(state, ctx)?,
+            CurrentMenu::AdvancedMenu => self.advanced.draw(state, ctx)?,
         }
 
         Ok(())

@@ -126,9 +126,15 @@
           "entry": "カットシーンをスキップ",
           "hold": "を押し続け",
           "fastforward": "はやおくり"
-        }
+        },
+        "discord_rpc": "Discord Rich Presence:"
       },
-      "links": "リンク"
+      "links": "リンク",
+      "advanced": "詳細設定",
+      "advanced_menu": {
+        "open_user_data": "ユーザープロファイルを開く",
+        "open_game_data": "ゲームファイルを開く"
+      }
     },
     "controls_menu": {
       "select_player": {
