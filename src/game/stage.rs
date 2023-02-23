@@ -304,17 +304,18 @@ impl StageData {
                     let mut data = Vec::new();
                     file.read_to_end(&mut data)?;
 
-                    let count = data.len() / 0xe5;
+                    let count = data.len() / 0x10C;
+                    info!("Debug Count {}", &count);
+                    info!("Debug Data {}", &data.len());
                     let mut f = Cursor::new(data);
                     for _ in 0..count {
-                        let mut ts_buf = vec![0u8; 0x20];
-                        let mut map_buf = vec![0u8; 0x20];
-                        let mut back_buf = vec![0u8; 0x20];
+                        let mut ts_buf = vec![0u8; 0x20]; //tileset buffer
+                        let mut map_buf = vec![0u8; 0x20]; //map buffer
+                        let mut back_buf = vec![0u8; 0x20]; //background buffer
                         let mut npc1_buf = vec![0u8; 0x20];
-                        let mut npc2_buf = vec![0u8; 0x20];
-                        let mut name_jap_buf = vec![0u8; 0x20];
-                        let mut name_buf = vec![0u8; 0x20];
-
+                        let mut npc2_buf = vec![0u8; 0x27];
+                        let mut name_jap_buf = vec![0u8; 0x20]; //jp name buffer
+                        let mut name_buf = vec![0u8; 0x40]; //en name buffer
                         f.read_exact(&mut ts_buf)?;
                         f.read_exact(&mut map_buf)?;
                         let bg_type = f.read_u32::<LE>()? as u8;
@@ -332,6 +333,15 @@ impl StageData {
                         let npc2 = from_csplus_stagetbl(&npc2_buf[0..zero_index(&npc2_buf)], is_switch);
                         let name = from_csplus_stagetbl(&name_buf[0..zero_index(&name_buf)], is_switch);
                         let name_jp = from_csplus_stagetbl(&name_jap_buf[0..zero_index(&name_jap_buf)], is_switch);
+
+                        info!("Loaded Stage!");
+                        info!("EN Name: {}", &name);
+                        info!("JP Name: {}", &name_jp);
+                        info!("Map: {}", &map);
+                        info!("Background: {}", &background);
+                        info!("Tileset: {}", &tileset);
+                        info!("NPC1: {}", &npc1);
+                        info!("NPC2: {}", &npc2);
 
                         let stage = StageData {
                             name: name.clone(),
@@ -571,7 +581,7 @@ impl Stage {
         constants: &EngineConstants,
         ctx: &mut Context,
     ) -> GameResult<TextScript> {
-        let tsc_file = filesystem::open_find(ctx, roots, ["Stage/", &self.data.map, ".tsc"].join(""))?;
+        let tsc_file = filesystem::open_find(ctx, roots, ["Stage/", &self.data.map, ".sjs"].join(""))?;
         let text_script = TextScript::load_from(tsc_file, constants)?;
 
         Ok(text_script)

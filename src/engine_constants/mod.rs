@@ -319,6 +319,7 @@ pub struct EngineConstants {
     pub is_cs_plus: bool,
     pub is_switch: bool,
     pub is_demo: bool,
+    pub is_cs3d:bool,
     pub supports_og_textures: bool,
     pub has_difficulty_menu: bool,
     pub supports_two_player: bool,
@@ -354,6 +355,7 @@ impl Clone for EngineConstants {
             is_cs_plus: self.is_cs_plus,
             is_switch: self.is_switch,
             is_demo: self.is_demo,
+            is_cs3d: self.is_cs3d,
             supports_og_textures: self.supports_og_textures,
             has_difficulty_menu: self.has_difficulty_menu,
             supports_two_player: self.supports_two_player,
@@ -391,6 +393,7 @@ impl EngineConstants {
             is_cs_plus: false,
             is_switch: false,
             is_demo: false,
+            is_cs3d: false,
             supports_og_textures: false,
             has_difficulty_menu: true,
             supports_two_player: cfg!(not(target_os = "android")),
@@ -1792,6 +1795,12 @@ impl EngineConstants {
         self.game.new_game_player_pos = (8, 6);
         self.title.logo_splash_rect = Rect { left: 224, top: 0, right: 320, bottom: 48 };
     }
+    pub fn apply_cs3d_patches(&mut self) {
+        log::info!("Applying Cave Story 3D-specific Cave Story+ constants patches...");
+
+        self.is_cs3d = true;
+        self.textscript.encrypted = false;
+    }
 
     pub fn rebuild_path_list(&mut self, mod_path: Option<String>, season: Season, settings: &Settings) {
         self.base_paths.clear();
@@ -1814,6 +1823,8 @@ impl EngineConstants {
             if settings.locale != "en".to_string() {
                 self.base_paths.insert(0, format!("/base/{}/", settings.locale));
             }
+        } else if self.is_cs3d { 
+            self.base_paths.insert(0, "/data/".to_owned());
         } else {
             if settings.locale != "en".to_string() {
                 self.base_paths.insert(0, format!("/{}/", settings.locale));
