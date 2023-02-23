@@ -395,6 +395,7 @@ impl SharedGameState {
             log::error!("EShop data files detected. !UNSUPPORTED!"); //Ditto, drowned carets finally part of mychar, the turning point towards CS+
         } else if filesystem::exists(ctx, "/data/stage3d/") {
             log::error!("CS3D data files detected. !UNSUPPORTED!"); //Sprites are technically all there but filenames differ, + no n3ddta support
+            constants.apply_cs3d_patches();
         } else if filesystem::exists(ctx, "/base/Nicalis.bmp") || filesystem::exists(ctx, "/base/Nicalis.png") {
             log::info!("Cave Story+ (PC) data files detected.");
             constants.apply_csplus_patches(&mut sound_manager);
@@ -533,23 +534,23 @@ impl SharedGameState {
         let npc_table = NPCTable::load_from(npc_tbl)?;
         self.npc_table = npc_table;
 
-        let head_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "Head.tsc")?;
+        let head_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "Head.sjs")?; //temporary switch to .sjs until i can find a elegant way to 
         let head_script = TextScript::load_from(head_tsc, &self.constants)?;
         self.textscript_vm.set_global_script(head_script);
 
-        let arms_item_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "ArmsItem.tsc")?;
+        let arms_item_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "ArmsItem.sjs")?;
         let arms_item_script = TextScript::load_from(arms_item_tsc, &self.constants)?;
         self.textscript_vm.set_inventory_script(arms_item_script);
 
-        let stage_select_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "StageSelect.tsc")?;
+        let stage_select_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "StageSelect.sjs")?;
         let stage_select_script = TextScript::load_from(stage_select_tsc, &self.constants)?;
         self.textscript_vm.set_stage_select_script(stage_select_script);
 
         let substitution_rect_map = [('=', self.constants.textscript.textbox_item_marker_rect)];
         self.textscript_vm.set_substitution_rect_map(substitution_rect_map);
 
-        if filesystem::exists_find(ctx, &self.constants.base_paths, "Credit.tsc") {
-            let credit_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "Credit.tsc")?;
+        if filesystem::exists_find(ctx, &self.constants.base_paths, "Credit.sjs") {
+            let credit_tsc = filesystem::open_find(ctx, &self.constants.base_paths, "Credit.sjs")?;
             let credit_script = CreditScript::load_from(credit_tsc, &self.constants)?;
             self.creditscript_vm.set_script(credit_script);
         }
