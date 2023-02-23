@@ -313,7 +313,8 @@ impl StageData {
                         let mut map_buf = vec![0u8; 0x20]; //map buffer
                         let mut back_buf = vec![0u8; 0x20]; //background buffer
                         let mut npc1_buf = vec![0u8; 0x20];
-                        let mut npc2_buf = vec![0u8; 0x27];
+                        let mut npc2_buf = vec![0u8; 0x20];
+                        let mut mystery_bytes = vec![0u8; 0x07];
                         let mut name_jap_buf = vec![0u8; 0x20]; //jp name buffer
                         let mut name_buf = vec![0u8; 0x40]; //en name buffer
                         f.read_exact(&mut ts_buf)?;
@@ -323,6 +324,7 @@ impl StageData {
                         f.read_exact(&mut npc1_buf)?;
                         f.read_exact(&mut npc2_buf)?;
                         let boss_no = f.read_u8()?;
+                        f.read_exact(&mut mystery_bytes)?;
                         f.read_exact(&mut name_jap_buf)?;
                         f.read_exact(&mut name_buf)?;
 

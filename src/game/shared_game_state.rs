@@ -387,7 +387,7 @@ impl SharedGameState {
             log::error!("EShop data files detected. !UNSUPPORTED!"); //Ditto, drowned carets finally part of mychar, the turning point towards CS+
         } else if filesystem::exists(ctx, "/data/stage3d/") {
             log::error!("CS3D data files detected. !UNSUPPORTED!"); //Sprites are technically all there but filenames differ, + no n3ddta support
-            constants.apply_cs3d_patches();
+            constants.apply_cs3d_patches(&mut sound_manager);
         } else if filesystem::exists(ctx, "/base/Nicalis.bmp") || filesystem::exists(ctx, "/base/Nicalis.png") {
             log::info!("Cave Story+ (PC) data files detected.");
             constants.apply_csplus_patches(&mut sound_manager);
