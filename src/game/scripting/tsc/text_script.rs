@@ -1991,6 +1991,36 @@ impl TextScriptVM {
 
                 exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
             }
+            TSCOpCode::ZCS => {
+                // todo: implement
+                log::info!("Unimplemented Opcode <0CS");
+
+                exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
+            }
+            TSCOpCode::ZCE => {
+                // todo: implement
+                log::info!("Unimplemented Opcode <0CE");
+
+                exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
+            }
+            TSCOpCode::ZSA => {
+                // todo: implement
+                log::info!("Unimplemented Opcode <0SA");
+
+                exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
+            }
+            TSCOpCode::ZSC => {
+                // todo: implement
+                log::info!("Unimplemented Opcode <0SC");
+
+                exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
+            }
+            TSCOpCode::ENT => {
+                // todo: implement
+                log::info!("Unimplemented Opcode <ENT");
+
+                exec_state = TextScriptExecutionState::Running(event, cursor.position() as u32);
+            }
         }
 
         Ok(exec_state)

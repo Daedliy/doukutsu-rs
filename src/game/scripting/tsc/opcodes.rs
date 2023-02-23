@@ -264,6 +264,21 @@ pub enum TSCOpCode {
     KE2,
     /// <FRE related to player 2?
     FR2,
+    // ---- CS3D specific opcodes ----
+    /// <0CS, hides the map from the 3DS' bottom screen
+    #[strum(serialize = "0CS")]
+    ZCS,
+    /// <0CE, unhides the map from the 3DS' bottom screen
+    #[strum(serialize = "0CE")]
+    ZCE,
+    /// <0SA, possibly unused, unknown purpose
+    #[strum(serialize = "0SA")]
+    ZSA,
+    /// <0SC, possibly unused, unknown purpose
+    #[strum(serialize = "0SC")]
+    ZSC,
+    /// <ENT, used, unknown purpose
+    ENT,
     // ---- Custom opcodes, for use by modders ----
 }
 

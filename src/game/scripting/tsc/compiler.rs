@@ -179,6 +179,11 @@ impl TextScript {
             | TSCOpCode::HM2
             | TSCOpCode::POP
             | TSCOpCode::KE2
+            | TSCOpCode::ZCS
+            | TSCOpCode::ZCE
+            | TSCOpCode::ZSA
+            | TSCOpCode::ZSC
+            | TSCOpCode::ENT
             | TSCOpCode::FR2 => {
                 put_varint(instr as i32, out);
             }

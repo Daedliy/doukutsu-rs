@@ -1511,10 +1511,11 @@ impl EngineConstants {
             font_path: "csfont.fnt".to_owned(),
             font_space_offset: 0.0,
             soundtracks: vec![
-                ExtraSoundtrack { id: "remastered".to_owned(), path: "/base/Ogg11/".to_owned(), available: false },
-                ExtraSoundtrack { id: "new".to_owned(), path: "/base/Ogg/".to_owned(), available: false },
-                ExtraSoundtrack { id: "famitracks".to_owned(), path: "/base/ogg17/".to_owned(), available: false },
-                ExtraSoundtrack { id: "ridiculon".to_owned(), path: "/base/ogg_ridic/".to_owned(), available: false },
+                ExtraSoundtrack { id: "Remastered".to_owned(), path: "/base/Ogg11/".to_owned(), available: false },
+                ExtraSoundtrack { id: "New".to_owned(), path: "/base/Ogg/".to_owned(), available: false },
+                ExtraSoundtrack { id: "Famitracks".to_owned(), path: "/base/ogg17/".to_owned(), available: false },
+                ExtraSoundtrack { id: "Ridiculon".to_owned(), path: "/base/ogg_ridic/".to_owned(), available: false },
+                ExtraSoundtrack { id: "Cave Story 3D".to_owned(),path: "/wav/".to_owned(), available: false },
             ],
             music_table: vec![
                 "xxxx".to_owned(),
@@ -1706,11 +1707,37 @@ impl EngineConstants {
         self.game.new_game_player_pos = (8, 6);
         self.title.logo_splash_rect = Rect { left: 224, top: 0, right: 320, bottom: 48 };
     }
-    pub fn apply_cs3d_patches(&mut self) {
+    pub fn apply_cs3d_patches(&mut self, sound_manager: &mut SoundManager) {
         log::info!("Applying Cave Story 3D-specific Cave Story+ constants patches...");
 
         self.is_cs3d = true;
         self.textscript.encrypted = false;
+        let typewriter_sample = PixToneParameters {
+            // fx2 (CS+)
+            channels: [
+                Channel {
+                    enabled: true,
+                    length: 2000,
+                    carrier: Waveform { waveform_type: 0, pitch: 92.000000, level: 32, offset: 0 },
+                    frequency: Waveform { waveform_type: 0, pitch: 3.000000, level: 44, offset: 0 },
+                    amplitude: Waveform { waveform_type: 0, pitch: 0.000000, level: 32, offset: 0 },
+                    envelope: Envelope {
+                        initial: 7,
+                        time_a: 2,
+                        value_a: 18,
+                        time_b: 128,
+                        value_b: 0,
+                        time_c: 255,
+                        value_c: 0,
+                    },
+                },
+                Channel::disabled(),
+                Channel::disabled(),
+                Channel::disabled(),
+            ],
+        };
+
+        let _ = sound_manager.set_sample_params(2, typewriter_sample);
     }
 
     pub fn rebuild_path_list(&mut self, mod_path: Option<String>, season: Season, settings: &Settings) {
