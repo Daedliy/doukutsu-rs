@@ -276,8 +276,6 @@ impl StageData {
                     file.read_to_end(&mut data)?;
 
                     let count = data.len() / 0x10C;
-                    info!("Debug Count {}", &count);
-                    info!("Debug Data {}", &data.len());
                     let mut f = Cursor::new(data);
                     for _ in 0..count {
                         let mut ts_buf = vec![0u8; 0x20]; //tileset buffer
@@ -285,7 +283,7 @@ impl StageData {
                         let mut back_buf = vec![0u8; 0x20]; //background buffer
                         let mut npc1_buf = vec![0u8; 0x20];
                         let mut npc2_buf = vec![0u8; 0x20];
-                        let mut mystery_bytes = vec![0u8; 0x07];
+                        let mut mystery_bytes = vec![0u8; 0x07]; //3 bytes of padding followed by a float
                         let mut name_jap_buf = vec![0u8; 0x20]; //jp name buffer
                         let mut name_buf = vec![0u8; 0x40]; //en name buffer
                         f.read_exact(&mut ts_buf)?;

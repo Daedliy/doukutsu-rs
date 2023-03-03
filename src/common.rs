@@ -204,7 +204,7 @@ pub enum Direction {
     FacingPlayer,
 }
 
-pub const FILE_TYPES: [&str; 4] = [".png", ".bmp", ".pbm",".tga"];
+pub const FILE_TYPES: [&str; 4] = [".png",".tga",".bmp",".pbm"]; //Also doubles as priority order somehow
 
 impl Direction {
     pub const fn from_int(val: usize) -> Option<Direction> {
