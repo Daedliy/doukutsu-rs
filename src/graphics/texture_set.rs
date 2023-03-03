@@ -501,10 +501,16 @@ impl TextureSet {
         let img = {
             let mut buf = [0u8; 8];
             let mut reader = filesystem::open_find(ctx, roots, path)?;
-            reader.read_exact(&mut buf)?;
-            reader.seek(SeekFrom::Start(0))?;
 
-            let image = image::load(BufReader::new(reader), image::guess_format(&buf)?)?;
+            let image;
+            if path.ends_with("tga") { //if file format cannot be predicted with image::guess_format() use this
+                image = image::load(BufReader::new(reader), image::ImageFormat::Tga)?;
+            } else {
+                reader.read_exact(&mut buf)?;
+                reader.seek(SeekFrom::Start(0))?;
+                image = image::load(BufReader::new(reader), image::guess_format(&buf)?)?;
+            }
+            
             let mut rgba = image.to_rgba8();
             if image.color().channel_count() != 4 {
                 TextureSet::make_transparent(&mut rgba);
