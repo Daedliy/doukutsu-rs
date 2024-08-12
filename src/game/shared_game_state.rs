@@ -393,7 +393,7 @@ impl SharedGameState {
             log::error!("DSiWare data files detected. !UNSUPPORTED!"); //Freeware 2.0, sprites are arranged VERY differently + separate drowned carets
         } else if filesystem::exists(ctx, "/darken.tex") || filesystem::exists(ctx, "/darken.png") {
             log::error!("EShop data files detected. !UNSUPPORTED!"); //Ditto, drowned carets finally part of mychar, the turning point towards CS+
-        } else if filesystem::exists(ctx, "/data/stage3d/") {
+        } else if filesystem::exists(ctx, "/stage3d/") {
             log::error!("CS3D data files detected. !UNSUPPORTED!"); //Sprites are technically all there but filenames differ, + no n3ddta support
             constants.apply_cs3d_patches(&mut sound_manager);
         } else if filesystem::exists(ctx, "/base/Nicalis.bmp") || filesystem::exists(ctx, "/base/Nicalis.png") {
