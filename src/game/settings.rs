@@ -355,6 +355,7 @@ impl Settings {
                 "New" => "new".to_owned(),
                 "Famitracks" => "famitracks".to_owned(),
                 "Ridiculon" => "ridiculon".to_owned(),
+                "CS3D" => "cs3d".to_owned(),
                 _ => self.soundtrack.clone(),
             }
         }

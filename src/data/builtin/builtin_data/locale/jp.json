@@ -190,7 +190,8 @@
     "remastered": "リマスター",
     "new": "新",
     "famitracks": "ファミトラック",
-    "ridiculon": "リディキュロン"
+    "ridiculon": "リディキュロン",
+    "cs3d": "洞窟物語3D"
   },
   "game": {
     "cutscene_skip": "{key} を押し続け、カットシーンをスキップ"

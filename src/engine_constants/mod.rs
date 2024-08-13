@@ -1515,7 +1515,7 @@ impl EngineConstants {
                 ExtraSoundtrack { id: "New".to_owned(), path: "/base/Ogg/".to_owned(), available: false },
                 ExtraSoundtrack { id: "Famitracks".to_owned(), path: "/base/ogg17/".to_owned(), available: false },
                 ExtraSoundtrack { id: "Ridiculon".to_owned(), path: "/base/ogg_ridic/".to_owned(), available: false },
-                ExtraSoundtrack { id: "Cave Story 3D".to_owned(),path: "/wav/".to_owned(), available: false },
+                ExtraSoundtrack { id: "CS3D".to_owned(),path: "/wav/".to_owned(), available: false }, //Trouble getting the name to work
             ],
             music_table: vec![
                 "xxxx".to_owned(),

@@ -191,7 +191,8 @@
     "remastered": "Remastered",
     "new": "New",
     "famitracks": "Famitracks",
-    "ridiculon": "Ridiculon"
+    "ridiculon": "Ridiculon",
+    "cs3d": "CS3D"
   },
   "game": {
     "cutscene_skip": "Hold {key} to skip the cutscene"
